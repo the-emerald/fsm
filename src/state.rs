@@ -3,9 +3,10 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 use std::num::ParseIntError;
 
+#[derive(Clone, Debug)]
 pub struct State{
     id: i32,
-    state_to_state: HashMap<char, &State>,
+    state_to_state: HashMap<char, State>,
     state_to_output: HashMap<char, char>,
 }
 
@@ -17,7 +18,7 @@ impl State {
             state_to_output: Default::default()
         }
     }
-    pub fn update_state_state(&mut self, input: char, next: &State) {
+    pub fn update_state_state(&mut self, input: char, next: State) {
         self.state_to_state.insert(input, next);
     }
 

@@ -27,9 +27,9 @@ impl FSM {
         let next_state_id = line[3].parse::<i32>()?;
 
         // Use id_to_state to find state
-        let state = self.id_to_state.entry(state_id).or_insert(
+        let mut state = self.id_to_state.entry(state_id).or_insert(
             State::new(state_id)
-        );
+        ).clone();
 
 
         // Use id_to_state to find nState
@@ -38,7 +38,7 @@ impl FSM {
         );
 
         // Add input->nState to state
-        state.update_state_state(input, next_state);
+        state.update_state_state(input, next_state.clone());
 
         // Add input->output to state
         state.update_state_output(input, output);
