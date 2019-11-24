@@ -8,13 +8,16 @@ pub struct FSM {
 }
 
 impl FSM {
-    pub(crate) fn new() -> FSM {
+    pub(crate) fn new(initial_state: Option<State>) -> FSM {
         FSM {
-            initial_state: None,
+            initial_state,
             id_to_state: HashMap::new(),
         }
     }
 
+    pub fn get_initial_state(&self) -> Option<State> {
+        self.initial_state.clone()
+    }
     // This method adds a line to the FSM
     pub fn add(&mut self, line: &str) -> Result<(), Box<dyn Error>>{
         // Decompose into a vector

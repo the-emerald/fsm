@@ -25,6 +25,14 @@ impl State {
     pub fn update_state_output(&mut self, input: char, next: char) {
         self.state_to_output.insert(input, next);
     }
+
+    pub fn get_output(&self, input: &char) -> Option<&char> {
+        self.state_to_output.get(input)
+    }
+
+    pub fn get_next_state(&self, input: &char) -> Option<&State> {
+        self.state_to_state.get(input)
+    }
 }
 
 impl FromStr for State {
