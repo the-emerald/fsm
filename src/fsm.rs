@@ -29,6 +29,8 @@ impl FSM {
         let output = line[2].parse::<char>()?;
         let next_state_id = line[3].parse::<i32>()?;
 
+        println!("{} {} {} {}", state_id, input, output, next_state_id);
+
         // Use id_to_state to find state
         let mut state = self.id_to_state.entry(state_id).or_insert(
             State::new(state_id)

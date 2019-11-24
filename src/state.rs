@@ -3,7 +3,7 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 use std::num::ParseIntError;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct State{
     id: i32,
     state_to_state: HashMap<char, State>,

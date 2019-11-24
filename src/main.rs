@@ -35,7 +35,6 @@ fn main() {
     let input = read_tape(&args[2]);
     //println!("{:?}", input);
 
-    println!("{}", &raw_lines[0]);
     // Use the first line to make an initial state
     let initial_state = state::State::from_str(&raw_lines[0]).unwrap();
 
@@ -43,11 +42,28 @@ fn main() {
     let mut fsm = fsm::FSM::new(Some(initial_state));
 
     // Iterate over the rest to generate the FSM
-    for line in raw_lines.iter().skip(1) {
+    for line in raw_lines.iter() {
         match fsm.add(&line) {
             Err(_) => panic!("Bad description"),
             Ok(x) => x,
         }
-        println!("{}", &line);
+        //println!("{}", &line);
+    }
+
+    let mut current_state: State = match fsm.get_initial_state().clone() {
+        None => panic!("No initial state set"),
+        Some(x) => x
+    };
+
+    for i in input.iter() {
+        println!("{}", i);
+        println!("{}", match current_state.get_output(i) {
+            Some(x) => x,
+            None => panic!("Bad input")
+        });
+        current_state = match current_state.get_next_state(i) {
+            None => panic!("Bad input"),
+            Some(x) => x.clone(),
+        }
     }
 }
