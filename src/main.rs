@@ -39,7 +39,7 @@ fn main() {
     let initial_state = state::State::from_str(&raw_lines[0]).unwrap();
 
     // Use the initial state to make FSM
-    let mut fsm = fsm::FSM::new(Some(initial_state));
+    let mut fsm = fsm::FSM::new(Some(&initial_state));
 
     // Iterate over the rest to generate the FSM
     for line in raw_lines.iter() {
@@ -50,7 +50,7 @@ fn main() {
         //println!("{}", &line);
     }
 
-    let mut current_state: State = match fsm.get_initial_state().clone() {
+    let mut current_state: &State = match fsm.get_initial_state() {
         None => panic!("No initial state set"),
         Some(x) => x
     };
@@ -63,7 +63,7 @@ fn main() {
         });
         current_state = match current_state.get_next_state(i) {
             None => panic!("Bad input"),
-            Some(x) => x.clone(),
+            Some(x) => x,
         }
     }
 }

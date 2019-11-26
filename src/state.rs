@@ -4,21 +4,21 @@ use std::str::FromStr;
 use std::num::ParseIntError;
 
 #[derive(Clone)]
-pub struct State{
+pub struct State<'a>{
     id: i32,
-    state_to_state: HashMap<char, State>,
+    state_to_state: HashMap<char, &'a State<'a>>,
     state_to_output: HashMap<char, char>,
 }
 
-impl State {
-    pub fn new(id: i32) -> State {
+impl<'a> State<'a> {
+    pub fn new(id: i32) -> State<'a> {
         State {
             id,
             state_to_state: Default::default(),
             state_to_output: Default::default()
         }
     }
-    pub fn update_state_state(&mut self, input: char, next: State) {
+    pub fn update_state_state(&mut self, input: char, next: &'a State<'a>) {
         self.state_to_state.insert(input, next);
     }
 
@@ -30,12 +30,12 @@ impl State {
         self.state_to_output.get(input)
     }
 
-    pub fn get_next_state(&self, input: &char) -> Option<&State> {
+    pub fn get_next_state(&self, input: &char) -> Option<&&State> {
         self.state_to_state.get(input)
     }
 }
 
-impl FromStr for State {
+impl<'a> FromStr for State<'a> {
     type Err = ParseIntError;
 
     // Make a new State from one line
@@ -52,16 +52,16 @@ impl FromStr for State {
     }
 }
 
-impl Hash for State {
+impl<'a> Hash for State<'a> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state)
     }
 }
 
-impl PartialEq for State {
+impl<'a> PartialEq for State<'a> {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
     }
 }
 
-impl Eq for State {}
+impl<'a> Eq for State<'a> {}
