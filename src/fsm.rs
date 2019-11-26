@@ -20,7 +20,7 @@ impl<'a> FSM<'a> {
     }
 
     // This method adds a line to the FSM
-    pub fn add(&mut self, line: &str) -> Result<(), Box<dyn Error>>{
+    pub fn add(&mut self, line: &str) -> Result<(), Box<dyn Error>> {
         // Decompose into a vector
         let line: Vec<&str> = line.split_whitespace().collect();
 
@@ -33,14 +33,14 @@ impl<'a> FSM<'a> {
         println!("{} {} {} {}", state_id, input, output, next_state_id);
 
         // Use id_to_state to find state
-        let state_new: &'a State = &State::new(state_id);
+        let state_new: State = State::new(state_id);
         let state = self.id_to_state.entry(state_id).or_insert(
             &state_new
             //&State::new(state_id)
         );
 
         // Use id_to_state to find nState
-        let next_state_new: &'a State = &State::new(state_id);
+        let next_state_new: State = State::new(state_id);
         let next_state = self.id_to_state.entry(next_state_id).or_insert(
             &next_state_new
             //&State::new(next_state_id)
