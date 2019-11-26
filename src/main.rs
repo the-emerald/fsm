@@ -1,9 +1,33 @@
 use std::{fs::File, io::{prelude::*, BufReader}, path::Path, env};
 use std::str::{FromStr};
-use crate::state::State;
+use std::collections::HashMap;
+use std::error::Error;
 
-mod fsm;
-mod state;
+
+// Represents a Finite State Machine.
+// S: type for states
+// IO: type for input/output
+// usize: indices
+struct FSM <S, IO> {
+    states: Vec<S>,
+    current_state: usize,
+    state_transitions: HashMap<(usize, IO), usize>,
+    outputs: HashMap<(usize, IO), IO>
+}
+
+impl FSM<S, IO> {
+    fn add_line(line: &str) -> Result<(), Box<dyn Error>>{
+        unimplemented!()
+    }
+
+    fn next_state(&mut self, input: IO) -> Result<(), Box<dyn Error>>{
+        unimplemented!()
+    }
+
+    fn verify(&mut self) -> bool {
+        unimplemented!()
+    }
+}
 
 fn read_lines(filename: impl AsRef<Path>) -> Vec<String> {
     let file = File::open(filename).expect("FSM file not found!");
