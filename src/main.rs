@@ -1,35 +1,10 @@
 use std::{fs::File, io::{prelude::*, BufReader}, path::Path, env};
-use std::str::{FromStr};
-use std::collections::HashMap;
+
+mod fsm;
+use crate::fsm::FSM;
 use std::error::Error;
 
-
-// Represents a Finite State Machine.
-// S: type for states
-// IO: type for input/output
-// usize: indices
-struct FSM <S, IO> {
-    states: Vec<S>,
-    current_state: usize,
-    state_transitions: HashMap<(usize, IO), usize>,
-    outputs: HashMap<(usize, IO), IO>
-}
-
-impl FSM<S, IO> {
-    fn add_line(line: &str) -> Result<(), Box<dyn Error>>{
-        unimplemented!()
-    }
-
-    fn next_state(&mut self, input: IO) -> Result<(), Box<dyn Error>>{
-        unimplemented!()
-    }
-
-    fn verify(&mut self) -> bool {
-        unimplemented!()
-    }
-}
-
-fn read_lines(filename: impl AsRef<Path>) -> Vec<String> {
+fn read_fsm_file(filename: impl AsRef<Path>) -> Vec<String> {
     let file = File::open(filename).expect("FSM file not found!");
     let buf = BufReader::new(file);
     buf.lines()
@@ -37,7 +12,7 @@ fn read_lines(filename: impl AsRef<Path>) -> Vec<String> {
         .collect()
 }
 
-fn read_tape(filename: impl AsRef<Path>) -> Vec<char> {
+fn read_tape_file(filename: impl AsRef<Path>) -> Vec<char> {
     let file = File::open(filename).expect("Input file not found!");
     let buf = BufReader::new(file);
     // Read the first line
@@ -48,6 +23,17 @@ fn read_tape(filename: impl AsRef<Path>) -> Vec<char> {
     first_line
 }
 
+fn read_line(line: &String) -> Result<(i32, char, char, i32), Box<dyn Error>> {
+    let line: Vec<&str> = line.split_whitespace().collect();
+
+    let state = line[0].parse::<i32>()?;
+    let input = line[1].parse::<char>()?;
+    let output = line[2].parse::<char>()?;
+    let next= line[3].parse::<i32>()?;
+
+    Ok((state, input, output, next))
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() != 3 {
@@ -55,39 +41,39 @@ fn main() {
     }
 
     // Read everything from file
-    let raw_lines = read_lines(&args[1]);
-    let input = read_tape(&args[2]);
-    //println!("{:?}", input);
+    let raw_lines = read_fsm_file(&args[1]);
+    let input = read_tape_file(&args[2]);
 
-    // Use the first line to make an initial state
-    let initial_state = state::State::from_str(&raw_lines[0]).unwrap();
+    let mut fsm: FSM<i32, char> = fsm::FSM::new();
 
-    // Use the initial state to make FSM
-    let mut fsm = fsm::FSM::new(Some(initial_state));
-
-    // Iterate over the rest to generate the FSM
+    // Add lines to FSM
     for line in raw_lines.iter() {
-        match fsm.add(&line) {
+        if line.is_empty() {
+            continue
+        }
+        let (state, input, output, next) = match read_line(line) {
             Err(_) => panic!("Bad description"),
             Ok(x) => x,
+        };
+        match fsm.add_line(state, input, output, next) {
+            Err(_) => panic!("Error compiling FSM"),
+            Ok(x) => x,
         }
-        //println!("{}", &line);
     }
 
-    let mut current_state: State = match fsm.get_initial_state().clone() {
-        None => panic!("No initial state set"),
-        Some(x) => x
-    };
+    //println!("{:?}", fsm);
+
+    if !fsm.validate() {
+        panic!("Bad description")
+    }
 
     for i in input.iter() {
-        println!("{}", i);
-        println!("{}", match current_state.get_output(i) {
-            Some(x) => x,
-            None => panic!("Bad input")
-        });
-        current_state = match current_state.get_next_state(i) {
-            None => panic!("Bad input"),
-            Some(x) => x.clone(),
-        }
+        //println!("In: {}", i);
+        let out = match fsm.next_state(*i) {
+            Ok(x) => x,
+            Err(_) => panic!("Bad input")
+        };
+        //println!("{:?}", fsm);
+        print!("{}", out)
     }
 }
