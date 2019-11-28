@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::hash::Hash;
 use std::str::FromStr;
@@ -50,7 +50,26 @@ impl<S: FromStr + PartialEq + Copy, IO: Copy + Eq + Hash + FromStr> FSM<S, IO> {
 
     pub fn validate(&mut self) -> bool {
         // Are there any states that do not accept the entirety of the input set?
-        true
+        // Use initial state as the base
+        let initial_state_inputs = self.get_accepted_inputs(0);
+        // For each state
+        for i in 1..self.states.len() {
+            let accepted = self.get_accepted_inputs(i);
+            if accepted != initial_state_inputs {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    fn get_accepted_inputs(&self, state: usize) -> HashSet<&IO> {
+        let mut accepted: HashSet<&IO> = HashSet::new();
+        for (key, _value) in &self.state_mapping {
+            if key.0 == state {
+                accepted.insert(&key.1);
+            }
+        }
+        accepted
     }
 
     fn get_or_add_state(&mut self, state: S) -> usize {
