@@ -8,7 +8,6 @@ use std::str::FromStr;
 // IO: type for input/output
 // usize: indices
 
-#[derive(Debug)]
 pub(crate) struct FSM <S: PartialEq, IO: Copy + Eq + Hash + FromStr > {
     states: Vec<S>,
     current_state: usize,

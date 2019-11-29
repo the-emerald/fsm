@@ -61,8 +61,6 @@ fn main() {
         }
     }
 
-    //println!("{:?}", fsm);
-
     if !fsm.validate() {
         panic!("Bad description")
     }
@@ -73,7 +71,6 @@ fn main() {
             Ok(x) => x,
             Err(_) => panic!("Bad input")
         };
-        //println!("{:?}", fsm);
         print!("{}", out)
     }
 }
